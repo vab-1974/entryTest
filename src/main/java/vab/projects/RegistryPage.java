@@ -1,18 +1,18 @@
 package vab.projects;
-
-import org.openqa.selenium.*;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.Random;
 import java.util.List;
 import java.util.Arrays;
 public class RegistryPage {
-    public final String[] names = {"John","Bob","Dan","Sam","Jack","Tomas","Oliver","Will"};
-    public final String[] lastnames = {"Smith","Braun","Baker","Jackson","Goldman","Gates","Wilson","Parkinson"};
-    public final String[] subjectsList = {"Maths","English","Biology","Commerce","Hystory"};
     private WebDriver wd;
     private WebElement firstName;
     private WebElement lastName;
@@ -79,11 +79,8 @@ public class RegistryPage {
     public void fillMobileNumber(){
         String phone = "8";
         for(int i=0;i<9;i++)
-            phone=phone+ new Random().nextInt(10);
+            phone=phone.concat(String.format("%d", new Random().nextInt(10)));
         this.mobileNumber.sendKeys(phone);
-    }
-    public void fillMobileNumber(String mobileNumber) {
-        this.mobileNumber.sendKeys(mobileNumber);
     }
 
     public String getMobileValue() {
@@ -153,7 +150,7 @@ public class RegistryPage {
             if (el.isSelected()) {
                 String cbID = el.getAttribute("id");
                 WebElement label = wd.findElement(By.xpath("//label[@for='" + cbID + "']"));
-                result = result+label.getText()+", ";
+                result = result.concat(label.getText()+", ");
             }
         }
         if (result.endsWith(", "))
@@ -161,10 +158,10 @@ public class RegistryPage {
 
         return result;
     }
-    public void setSubjects() {
-        int NumberOfSubject = new Random().nextInt (subjectsList.length);
+    public void setSubjects(List<String> subjectsList) {
+        int NumberOfSubject = new Random().nextInt (subjectsList.size());
         for (int i=0; i<NumberOfSubject;i++) {
-            this.subjects.sendKeys(subjectsList[i]);
+            this.subjects.sendKeys(subjectsList.get(i));
             this.subjects.sendKeys(Keys.TAB);
         }
     }
@@ -172,8 +169,8 @@ public class RegistryPage {
         List<WebElement> subj = wd.findElements(By.xpath("//div[@id='subjectsContainer']//div[@class='css-12jo7m5 subjects-auto-complete__multi-value__label']"));
         String result ="";
         for (WebElement el:subj)
-            if (el.getText()!="")
-                result = result + el.getText()+", ";
+            if (!Objects.equals(el.getText(), ""))
+                result = "%s%s, ".formatted(result, el.getText());
         if (result.endsWith(", "))
             result=result.substring(0,result.length()-2);
         return result;

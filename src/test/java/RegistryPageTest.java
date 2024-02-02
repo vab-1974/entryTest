@@ -1,16 +1,20 @@
-import org.junit.*;
+import org.junit.Test;
+import org.junit.BeforeClass;
+import org.junit.AfterClass;
+import org.junit.Assert;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import vab.projects.RegistryPage;
 import vab.projects.ResultWindow;
-
-import javax.rmi.ssl.SslRMIClientSocketFactory;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class RegistryPageTest {
     public static RegistryPage registryPage;
     public static ResultWindow resultWin;
     public static WebDriver wd;
+    public static final List<String> subjectsList = Arrays.asList("Maths","English","Biology","Commerce","Hystory");
 
     @BeforeClass
     public static void setup() {
@@ -28,7 +32,7 @@ public class RegistryPageTest {
         registryPage.setRandomGender();
         registryPage.fillMobileNumber();
         registryPage.fillDateOfBirth("30.09.2020");
-        registryPage.setSubjects();
+        registryPage.setSubjects(subjectsList);
         registryPage.setRandomHobbies();
         registryPage.fillCurrentAddress("432027, Russia, Ulyanovsk, Goncharova st., 1");
         registryPage.loadPicture();
@@ -40,7 +44,7 @@ public class RegistryPageTest {
 
 
     @Test ()
-    public void testHeader(String expected, String actual){
+    public void testHeader(){
         Assert.assertEquals("Строки не равны: ","Thanks for submitting the form",resultWin.getHeader());
     }
     @Test
