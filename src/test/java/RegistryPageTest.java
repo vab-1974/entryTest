@@ -1,13 +1,14 @@
+import vab.projects.RegistryPage;
+import vab.projects.ResultWindow;
 import org.junit.Test;
 import org.junit.BeforeClass;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import vab.projects.RegistryPage;
-import vab.projects.ResultWindow;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class RegistryPageTest {
@@ -16,6 +17,14 @@ public class RegistryPageTest {
     public static WebDriver wd;
     public static final List<String> subjectsList = Arrays.asList("Maths","English","Biology","Commerce","Hystory");
 
+    static final String letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    static final String digits ="0123456789";
+    static String genString(int length, String symbolsSet) {
+        StringBuilder sb = new StringBuilder(length);
+        for(int i = 0; i < length; i++)
+            sb.append(symbolsSet.charAt(new Random().nextInt(symbolsSet.length())));
+        return sb.toString();
+    }
     @BeforeClass
     public static void setup() {
         wd = new ChromeDriver();
@@ -26,23 +35,23 @@ public class RegistryPageTest {
         fillRegistryForm();
  }
     public static void fillRegistryForm() {
-        registryPage.fillFirstName("Иван");
-        registryPage.fillLastName("Петров");
-        registryPage.fillEmail("I.Petrov@pochta.net");
+        registryPage.fillFirstName(genString(new Random().nextInt(10)+1,letters));
+        registryPage.fillLastName(genString(new Random().nextInt(10)+1,letters));
+        registryPage.fillEmail(genString(new Random().nextInt(10)+1,letters+digits)+
+                          "@"+ genString(new Random().nextInt(10)+1,letters+digits)+
+                          "."+ genString(new Random().nextInt(4)+2,letters));
         registryPage.setRandomGender();
-        registryPage.fillMobileNumber();
+        registryPage.fillMobileNumber(genString(10,digits));
         registryPage.fillDateOfBirth("30.09.2020");
         registryPage.setSubjects(subjectsList);
         registryPage.setRandomHobbies();
-        registryPage.fillCurrentAddress("432027, Russia, Ulyanovsk, Goncharova st., 1");
+        registryPage.fillCurrentAddress(genString(new Random().nextInt(50)+1,letters+digits));
         registryPage.loadPicture();
         registryPage.fillState();
         registryPage.fillCity();
         registryPage.clickSubmit();
         resultWin = new ResultWindow(wd);
     }
-
-
     @Test ()
     public void testHeader(){
         Assert.assertEquals("Строки не равны: ","Thanks for submitting the form",resultWin.getHeader());
@@ -97,7 +106,7 @@ public class RegistryPageTest {
 
     @AfterClass
     public static void tearDown() {
-        wd.quit();
+       //d.quit();
     }
 }
 

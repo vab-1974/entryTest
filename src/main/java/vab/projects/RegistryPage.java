@@ -76,11 +76,8 @@ public class RegistryPage {
         }
         return "Not selected";
     }
-    public void fillMobileNumber(){
-        String phone = "8";
-        for(int i=0;i<9;i++)
-            phone=phone.concat(String.format("%d", new Random().nextInt(10)));
-        this.mobileNumber.sendKeys(phone);
+    public void fillMobileNumber(String phoneNumber){
+        this.mobileNumber.sendKeys(phoneNumber);
     }
 
     public String getMobileValue() {
