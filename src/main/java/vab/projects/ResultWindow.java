@@ -10,6 +10,8 @@ public class ResultWindow {
 
     private WebElement headerElement;
     private List<WebElement> dataTableRows;
+
+    private WebElement btnClose;
     public ResultWindow(WebDriver driver) {
         this.wd = driver;
         initElements();
@@ -18,6 +20,7 @@ public class ResultWindow {
     public void initElements(){
         headerElement = wd.findElement(By.id("example-modal-sizes-title-lg"));
         dataTableRows = wd.findElements(By.xpath("//table[@class='table table-dark table-striped table-bordered table-hover']/tbody/tr"));
+        btnClose = wd.findElement(By.id("closeLargeModal"));
     }
 
     public String getHeader() {
@@ -31,5 +34,8 @@ public class ResultWindow {
                return el.findElement(By.xpath("./td[2]")).getText();
         }
         return "";
+    }
+    public void clickClose() {
+        btnClose.click();
     }
 }

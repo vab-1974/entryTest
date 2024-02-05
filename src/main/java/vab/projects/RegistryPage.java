@@ -9,7 +9,6 @@ import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.Random;
 import java.util.List;
 import java.util.Arrays;
 public class RegistryPage {
@@ -47,23 +46,24 @@ public class RegistryPage {
     public void fillFirstName(String name) {
         this.firstName.sendKeys(name);
     }
+    public String getFirstNameValue() {
+        return this.firstName.getAttribute("value");
+    }
     public void fillLastName(String name) {
         this.lastName.sendKeys(name);
     }
-    public String getStudentNameValue() {
-        return this.firstName.getAttribute("value") +" "+this.lastName.getAttribute("value");
+    public String getLastNameValue() {
+        return this.lastName.getAttribute("value");
     }
-
     public void fillEmail(String email) {
         this.email.sendKeys(email);
     }
     public String getEmailValue() {
         return this.email.getAttribute("value");
     }
-    public void setRandomGender() {
-        int genderNum = new Random().nextInt(3)+1;
-        String condition = "gender-radio-" + genderNum;
-        wd.findElement(By.xpath("//label [@for='"+condition+"']")).click();
+    public void setGender(String gender) {
+        WebElement el = wd.findElement(By.xpath("//input [@value='"+gender+"']"));
+        el.sendKeys(" ");
     }
 
     public String getGenderValue() {
@@ -126,16 +126,15 @@ public class RegistryPage {
                 this.dateOfBirth.sendKeys(Keys.ESCAPE);
         }
     }
-
     public String getDateOfBirthValue() {
         return this.dateOfBirth.getAttribute("value");
     }
-    public void setRandomHobbies() {
-        List<WebElement> checkBoxes = wd.findElements(By.cssSelector("label[for^='hobbies']"));
-        for (WebElement el: checkBoxes)
-        {
-            if ((new Random().nextInt(100)) > 49) {
-                el.click();
+    public void setHobbies(String hobbies) {
+        if (!hobbies.equals("")) {
+            List<String > hobbiesList = Arrays.asList(hobbies.split(", "));
+            for (String el: hobbiesList) {
+             WebElement cb = wd.findElement(By.xpath("//label[text()='" + el + "']"));
+             cb.click();
             }
         }
     }
@@ -155,11 +154,13 @@ public class RegistryPage {
 
         return result;
     }
-    public void setSubjects(List<String> subjectsList) {
-        int NumberOfSubject = new Random().nextInt (subjectsList.size());
-        for (int i=0; i<NumberOfSubject;i++) {
-            this.subjects.sendKeys(subjectsList.get(i));
-            this.subjects.sendKeys(Keys.TAB);
+    public void setSubjects(String subjects) {
+        if (!subjects.equals("")) {
+            List<String > subjectsList = Arrays.asList(subjects.split(", "));
+            for (String subj: subjectsList) {
+                this.subjects.sendKeys(subj);
+                this.subjects.sendKeys(Keys.TAB);
+            }
         }
     }
     public String getSubjectsValue() {
@@ -173,17 +174,19 @@ public class RegistryPage {
         return result;
     }
 
-    public void loadPicture()  {
+    public void loadPicture(String pictName)  {
         Path path;
         try {
-            path = Paths.get(RegistryPage.class.getResource("/MyRealFoto.jpg").toURI());
+            path = Paths.get(RegistryPage.class.getResource("/"+pictName).toURI());
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
        this.selectPicture.sendKeys(path.toString());
     }
     public String getPictureValue()  {
-       return this.selectPicture.getAttribute("value");
+       String result = this.selectPicture.getAttribute("value");
+       result= result.substring(result.lastIndexOf('\\')+1);
+       return result;
     }
 
     public void fillCurrentAddress(String address) {
@@ -192,14 +195,20 @@ public class RegistryPage {
     public String getCurrentAddressValue () {
         return this.currentAddress.getAttribute("value");
     }
-    public void fillState () {
+    public void fillState (String numKeys) {
+        int numClicks = Integer.parseInt(numKeys);
         this.state.click();
         WebElement el = wd.switchTo().activeElement();
+        for (int i=0; i<numClicks;i++)
+            el.sendKeys(Keys.ARROW_DOWN);
         el.sendKeys(Keys.SPACE);
     }
-    public void fillCity () {
+    public void fillCity (String numKeys) {
+        int numClicks = Integer.parseInt(numKeys);
         this.city.click();
         WebElement el = wd.switchTo().activeElement();
+        for (int i=0; i<numClicks;i++)
+            el.sendKeys(Keys.ARROW_DOWN);
         el.sendKeys(Keys.SPACE);
     }
     public String getStateCityValue() {
