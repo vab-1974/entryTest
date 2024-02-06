@@ -43,8 +43,12 @@ public class RegistryPage {
         this.submitButton = wd.findElement(By.id("submit"));
     }
 
+    public WebElement getFirstName() {
+        return this.firstName;
+    }
+
     public void fillFirstName(String name) {
-        this.firstName.sendKeys(name);
+        this.firstName.sendKeys(name,Keys.TAB);
     }
     public String getFirstNameValue() {
         return this.firstName.getAttribute("value");

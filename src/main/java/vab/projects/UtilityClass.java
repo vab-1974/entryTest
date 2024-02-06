@@ -1,6 +1,7 @@
 package vab.projects;
 
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import java.text.DecimalFormat;
 import java.time.Month;
 import java.time.format.TextStyle;
@@ -13,6 +14,7 @@ public abstract class UtilityClass {
     public static WebDriver wd;
     public static Object[][] ds;
     public static Random random = new Random();
+    public static WebDriverWait expWait;
     public static final List<String> subjectsList = Arrays.asList("Maths","English","Biology","Commerce","History");
     public static final List<String> hobbiesList = Arrays.asList("Sports","Reading","Music");
     public static final List<String> genderList = Arrays.asList("Male","Female","Other");
