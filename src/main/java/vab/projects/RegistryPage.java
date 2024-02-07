@@ -11,6 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.List;
 import java.util.Arrays;
+
 public class RegistryPage {
     private WebDriver wd;
     private WebElement firstName;
@@ -24,6 +25,14 @@ public class RegistryPage {
     private WebElement state;
     private WebElement city;
     private WebElement submitButton;
+    private List<WebElement> hobbies;
+    private WebElement genderMale;
+    private WebElement genderFemale;
+    private WebElement genderOther;
+    private WebElement hobbySports;
+    private WebElement hobbyReading;
+    private WebElement hobbyMusic;
+
 
     public RegistryPage(WebDriver driver) {
         this.wd = driver;
@@ -41,52 +50,74 @@ public class RegistryPage {
         this.state = wd.findElement(By.cssSelector("div#state"));
         this.city = wd.findElement(By.cssSelector("div#city"));
         this.submitButton = wd.findElement(By.id("submit"));
+        this.genderMale = wd.findElement(By.xpath("//form//input[@type='radio' and @value='Male']"));
+        this.genderFemale = wd.findElement(By.xpath("//form//input[@type='radio' and @value='Female']"));
+        this.genderOther = wd.findElement(By.xpath("//form//input[@type='radio' and @value='Other']"));
+        this.hobbySports = wd.findElement(By.id("hobbies-checkbox-1"));
+        this.hobbyReading = wd.findElement(By.id("hobbies-checkbox-2"));
+        this.hobbyMusic = wd.findElement(By.id("hobbies-checkbox-3"));
+        this.hobbies = wd.findElements(By.xpath("//form//input[@type='checkbox']"));
     }
 
-    public WebElement getFirstName() {
+    public WebElement getFirstNameAsElement() {
         return this.firstName;
     }
-
     public void fillFirstName(String name) {
         this.firstName.sendKeys(name,Keys.TAB);
     }
     public String getFirstNameValue() {
         return this.firstName.getAttribute("value");
     }
+    public void clearFirstName(){this.firstName.clear();}
+
     public void fillLastName(String name) {
         this.lastName.sendKeys(name);
     }
     public String getLastNameValue() {
         return this.lastName.getAttribute("value");
     }
+    public void clearLastName(){this.lastName.clear();}
+
     public void fillEmail(String email) {
         this.email.sendKeys(email);
     }
     public String getEmailValue() {
         return this.email.getAttribute("value");
     }
+    public void clearEmail(){this.email.clear();}
+
     public void setGender(String gender) {
-        WebElement el = wd.findElement(By.xpath("//input [@value='"+gender+"']"));
-        el.sendKeys(" ");
+        this.getGenderAsElement(gender).sendKeys(" ");
+    }
+    public String getGenderValue() {
+       WebElement el = findSelectedGenderAsElement();
+       if (el != null) return el.getAttribute("value");
+       else return "Not selected";
     }
 
-    public String getGenderValue() {
-        List<WebElement> rb = wd.findElements(By.xpath("//input[contains(@id,'gender-radio')]"));
-        boolean res;
-        for (WebElement el:rb) {
-            res = el.isSelected();
-            if (res)
-                return el.getAttribute("value");
-        }
-        return "Not selected";
+    public WebElement findSelectedGenderAsElement() {
+        WebElement el = null;
+        if (this.genderMale.isSelected()) el = this.genderMale;
+        else if (this.genderFemale.isSelected()) el = this.genderFemale;
+        else if (this.genderOther.isSelected()) el = this.genderOther;
+        return el;
     }
+    public WebElement getGenderAsElement (String gender) {
+        return switch (gender) {
+            case "Male" -> this.genderMale;
+            case "Female" -> this.genderFemale;
+            default -> this.genderOther;
+        };
+    }
+
     public void fillMobileNumber(String phoneNumber){
         this.mobileNumber.sendKeys(phoneNumber);
     }
-
     public String getMobileValue() {
         return this.mobileNumber.getAttribute("value");
     }
+    public void clearMobileNumber(){this.mobileNumber.clear();}
+
     public void fillDateOfBirth (String dateOfBirth) {
         List<String> months = Arrays.asList("January", "February","March","April","May","June","July",
                 "August","September","October","November","December");
@@ -133,12 +164,13 @@ public class RegistryPage {
     public String getDateOfBirthValue() {
         return this.dateOfBirth.getAttribute("value");
     }
+
     public void setHobbies(String hobbies) {
         if (!hobbies.equals("")) {
-            List<String > hobbiesList = Arrays.asList(hobbies.split(", "));
+            String[] hobbiesList = hobbies.split(", ");
             for (String el: hobbiesList) {
-             WebElement cb = wd.findElement(By.xpath("//label[text()='" + el + "']"));
-             cb.click();
+             WebElement cb = wd.findElement(By.xpath("//label[text()='" + el + "']/preceding::input[1]"));
+             cb.sendKeys(Keys.SPACE);
             }
         }
     }
@@ -158,9 +190,23 @@ public class RegistryPage {
 
         return result;
     }
+    public WebElement getHobbyAsElement(String hobby){
+        return switch (hobby) {
+            case "Music" -> this.hobbyMusic;
+            case "Sports" -> this.hobbySports;
+            case "Reading" -> this.hobbyReading;
+            default -> null;
+        };
+    }
+    public void clearHobbies(){
+            for (WebElement cb:this.hobbies)
+                if (cb.isSelected())
+                   cb.sendKeys(Keys.SPACE);
+    }
+
     public void setSubjects(String subjects) {
         if (!subjects.equals("")) {
-            List<String > subjectsList = Arrays.asList(subjects.split(", "));
+            String[] subjectsList = subjects.split(", ");
             for (String subj: subjectsList) {
                 this.subjects.sendKeys(subj);
                 this.subjects.sendKeys(Keys.TAB);
@@ -177,11 +223,16 @@ public class RegistryPage {
             result=result.substring(0,result.length()-2);
         return result;
     }
+    public void clearSubjects() {
+        WebElement button = wd.findElement(By.xpath("//div[@id='subjectsContainer']//div[@class='subjects-auto-complete__indicators css-1wy0on6']"));
+        if (button.isDisplayed())
+            button.click();
+    }
 
     public void loadPicture(String pictName)  {
         Path path;
         try {
-            path = Paths.get(RegistryPage.class.getResource("/"+pictName).toURI());
+            path = Paths.get(Objects.requireNonNull(RegistryPage.class.getResource("/" + pictName)).toURI());
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -192,6 +243,9 @@ public class RegistryPage {
        result= result.substring(result.lastIndexOf('\\')+1);
        return result;
     }
+    public void clearPicture() {
+        this.selectPicture.clear();
+    }
 
     public void fillCurrentAddress(String address) {
         this.currentAddress.sendKeys(address,Keys.TAB);
@@ -199,6 +253,10 @@ public class RegistryPage {
     public String getCurrentAddressValue () {
         return this.currentAddress.getAttribute("value");
     }
+    public void clearCurrentAddress() {
+        this.currentAddress.clear();
+    }
+
     public void fillState (String numKeys) {
         int numClicks = Integer.parseInt(numKeys);
         this.state.click();
@@ -223,5 +281,7 @@ public class RegistryPage {
     public void clickSubmit() {
         this.submitButton.sendKeys(Keys.RETURN);
     }
-
+    public WebElement getSubmitButtonAsElement(){
+        return this.submitButton;
+    }
 }

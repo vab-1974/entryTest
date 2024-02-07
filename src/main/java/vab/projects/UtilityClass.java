@@ -86,7 +86,6 @@ public abstract class UtilityClass {
         }
         return result;
     }
-
     public static String getMonthName (String date){
         int monthNum = Integer.parseInt(date.substring(3,5));
         return Month.of( monthNum ).getDisplayName( TextStyle.FULL , Locale.US );
