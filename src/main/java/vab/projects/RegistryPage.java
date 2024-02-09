@@ -84,6 +84,9 @@ public class RegistryPage {
     public String getEmailValue() {
         return this.email.getAttribute("value");
     }
+    public WebElement getEmailAsElement() {
+        return this.email;
+    }
     public void clearEmail(){this.email.clear();}
 
     public void setGender(String gender) {

@@ -12,7 +12,6 @@ public abstract class UtilityClass {
     public static RegistryPage registryPage;
     public static ResultWindow resultWin;
     public static WebDriver wd;
-    public static Object[][] ds;
     public static Random random = new Random();
     public static WebDriverWait expWait;
     public static final List<String> subjectsList = Arrays.asList("Maths","English","Biology","Commerce","History");
@@ -61,7 +60,7 @@ public abstract class UtilityClass {
         else result=result.substring(1,result.length()-1);
         return result;
     }
-    public static String[] genTestDataSet() {
+    public static String[] genDataSet() {
         String[] result = new String[12];
         result[0] = genLetDigString(1,10);
         result[1] = genLetDigString(1,10);
@@ -82,7 +81,7 @@ public abstract class UtilityClass {
     public static Object[][] getDataSets(int numSets) {
         Object[][] result = new Object[numSets][12];
         for (int i=0;i<numSets;i++) {
-            result[i]= genTestDataSet();
+            result[i]= genDataSet();
         }
         return result;
     }
