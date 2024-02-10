@@ -2,6 +2,10 @@ package vab.projects;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.time.Month;
 import java.time.format.TextStyle;
@@ -9,6 +13,12 @@ import java.util.*;
 
 public abstract class UtilityClass {
     public static String myURL="https://demoqa.com/automation-practice-form";
+    public static String PathToWebDriver;
+    static {
+        try{
+        PathToWebDriver = Paths.get(Objects.requireNonNull(RegistryPage.class.getResource("/chromedriver.exe")).toURI()).toString();}
+        catch (URISyntaxException e) {}
+    }
     public static RegistryPage registryPage;
     public static ResultWindow resultWin;
     public static WebDriver wd;
